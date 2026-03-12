@@ -3,10 +3,8 @@
   "hooks": {
     "postToolUse": [
       {
-        "description": "Capture commit in Worktale after git commit",
-        "toolNames": ["run_in_terminal"],
-        "matchPattern": "git commit",
-        "command": "bash -c 'worktale capture --silent 2>/dev/null || true'"
+        "type": "command",
+        "bash": "worktale capture --silent 2>/dev/null || true"
       }
     ]
   }

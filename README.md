@@ -25,7 +25,8 @@ worktale init
 In any Copilot CLI session, activate the Worktale agent:
 
 ```
-@worktale
+/agent
+# Select "worktale" from the list
 ```
 
 The agent confirms narration is active, then after every commit it makes, it runs:
@@ -36,7 +37,7 @@ worktale note "Refactored auth middleware for compliance — replaced session to
 
 ### Automatic capture via hooks
 
-This plugin also includes a `postToolUse` hook that automatically runs `worktale capture` after every `git commit` the agent makes — even without explicitly activating the `@worktale` agent. This ensures every commit is captured in your local Worktale database.
+This plugin also includes a `postToolUse` hook that automatically runs `worktale capture` after every `git commit` the agent makes — even without explicitly activating the Worktale agent. This ensures every commit is captured in your local Worktale database.
 
 Notes accumulate throughout the day. View them with:
 
@@ -58,7 +59,7 @@ It does *not* duplicate what git already tracks (file paths, line counts, diffs)
 ## How it works
 
 1. `/plugin install` registers the Worktale agent and hooks
-2. `@worktale` activates the narration agent for the session
+2. `/agent` → select "worktale" to activate session narration
 3. The `postToolUse` hook fires after every `git commit`, running `worktale capture`
 4. The agent runs `worktale note "..."` after each commit with rich context
 5. Notes appear in `worktale digest`, the TUI dashboard, and (eventually) your Worktale Cloud portfolio

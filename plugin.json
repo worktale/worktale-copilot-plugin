@@ -9,6 +9,8 @@
   "homepage": "https://worktale.org",
   "repository": "https://github.com/worktale/worktale-copilot-plugin",
   "license": "MIT",
+  "agents": "agents/",
+  "hooks": ".github/hooks/",
   "keywords": [
     "worktale",
     "developer-journal",
