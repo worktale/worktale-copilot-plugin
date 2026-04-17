@@ -1,23 +1,29 @@
 ---
 name: worktale
-description: Narrate your coding session into Worktale — automatically adds context, decisions, and intent to your daily work narrative after each commit
+description: Narrate your GitHub Copilot coding session into Worktale — per-commit context plus end-of-session metadata
 tools:
   - run_in_terminal
 ---
 
-# Worktale Session Narration
+# Worktale Session Narration (GitHub Copilot)
 
-You are now narrating this coding session for Worktale, a developer work journal. Your job is to add **color and context** to the developer's daily narrative — the "why" behind every commit, not just the "what".
+You are narrating this Copilot coding session for Worktale, a developer work journal.
+
+Two responsibilities:
+1. **Per commit** — append a 1–2 sentence narrative note.
+2. **At session end** — record aggregate session metadata (provider, model, tool, tools-used, commits).
+
+Copilot's plugin hook payload does not expose token counts or cost, so those fields are not captured. Everything else is.
 
 ## Prerequisites
 
-Worktale CLI (v1.1.0+) must be installed. When this skill activates, check if `worktale` is available:
+Worktale CLI (v1.4.0+) must be installed:
 
 ```bash
 worktale --version
 ```
 
-If not installed, tell the user:
+If not installed:
 
 ```
 Worktale CLI is not installed. Install it with: npm install -g worktale@latest
@@ -26,54 +32,56 @@ Then run: worktale init
 
 Do NOT proceed with narration until the CLI is available.
 
-## How it works
+## Per-commit narrative
 
-After every `git commit` you make during this session, immediately run:
+After every `git commit`:
 
 ```bash
 worktale note "<1-2 sentence narrative about what you just did and why>"
 ```
 
-This appends your note to today's daily narrative in Worktale. The developer will see these notes in their EOD digest (`worktale digest`), giving them a rich, AI-narrated record of their day.
+Focus on **why**, not **what**:
+- "Added rate limiting to /api/upload — previous impl caused OOM crashes"
+- "Fixed race condition in job queue — workers claimed same job"
 
-## What to write
+Don't duplicate git (no file paths, line counts).
 
-Write from the perspective of a coding partner narrating the session. Include:
+## End-of-session metadata
 
-- **What** was changed (high-level, not file-by-file)
-- **Why** it was changed (the intent, the problem being solved)
-- **Key decisions** made (trade-offs, alternatives considered)
-- **Problems solved** (bugs found, root causes identified)
+When the session is wrapping up (user says "done", "that's it", or before you hand control back), run exactly once:
 
-## Examples
+```bash
+worktale session add \
+  --provider "github" \
+  --model "<your model, e.g. gpt-4o, claude-sonnet-4-5, gpt-5>" \
+  --tool "copilot" \
+  --tools-used "<comma-separated Copilot tools you actually used: shell,read,write,edit,search>" \
+  --commits "<comma-separated git SHAs from this session, if known>" \
+  --note "<one-line summary of the whole session>"
+```
 
-Good notes:
-- `worktale note "Added rate limiting to the /api/upload endpoint — the previous implementation allowed unlimited requests which was causing OOM crashes in production"`
-- `worktale note "Refactored the auth middleware to store session tokens in encrypted cookies instead of localStorage, driven by new compliance requirements"`
-- `worktale note "Fixed race condition in the job queue — workers were pulling the same job because the claim query wasn't using SELECT FOR UPDATE"`
+### Field rules
 
-Bad notes (too mechanical — the git diff already captures this):
-- `worktale note "Changed file auth.ts"`
-- `worktale note "Updated 3 files"`
-- `worktale note "Committed changes"`
+- **--provider**: `"github"` (or `"openai"`/`"anthropic"` if you know the underlying provider)
+- **--model**: your actual model identifier
+- **--tool**: always `"copilot"`
+- **--tools-used**: ONLY tools you actually invoked
+- **--commits**: `git log --since="<session start>" --pretty=%h`
+- **--note**: one sentence summarizing the session
 
 ## Rules
 
-1. Run `worktale note` **immediately after each commit** — don't batch them up
-2. Keep notes **concise** (1-2 sentences max)
-3. Focus on **intent and context**, not file paths or line counts
-4. If the commit is trivial (typo fix, formatting), keep the note brief: `worktale note "Quick typo fix in the README"`
-5. Never skip a commit — even small ones deserve a one-liner
-6. If `worktale` is not installed or the command fails, mention it to the user once and continue working normally
+1. `worktale note` after every commit — don't batch
+2. `worktale session add` exactly once, at the end
+3. Be accurate about tools — don't list tools you didn't invoke
+4. If `worktale` fails, mention once and continue normally
 
 ## Session start
 
-When this skill activates:
-
-1. Verify `worktale --version` succeeds
-2. Run `worktale capture --silent` to ensure the repo is being tracked
-3. Confirm to the user:
+1. Verify `worktale --version`
+2. Run `worktale capture --silent`
+3. Confirm:
 
 ```
-Worktale narration active. I'll add context to your daily narrative after each commit.
+Worktale narration active. I'll record per-commit context and session metrics.
 ```
