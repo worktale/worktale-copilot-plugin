@@ -1,7 +1,7 @@
 {
-  "name": "worktale",
-  "description": "Worktale AI session tracking for GitHub Copilot — per-commit narrative plus end-of-session provider/model/tool metrics",
-  "version": "1.1.0",
+  "name": "worktale-copilot",
+  "description": "Worktale AI session tracking for GitHub Copilot CLI — automatic token + cost capture from session-state JSONL plus per-commit narrative",
+  "version": "1.2.0",
   "author": {
     "name": "George Rios",
     "url": "https://plurral.com"
@@ -10,16 +10,16 @@
   "repository": "https://github.com/worktale/worktale-copilot-plugin",
   "license": "MIT",
   "agents": "agents/",
-  "hooks": ".github/hooks/",
+  "hooks": "hooks/",
   "keywords": [
     "worktale",
+    "github-copilot",
     "developer-journal",
     "git",
     "narration",
     "ai-agent",
-    "copilot",
-    "coding-session",
-    "daily-digest",
-    "session-tracking"
+    "session-tracking",
+    "token-tracking",
+    "cost-tracking"
   ]
 }
